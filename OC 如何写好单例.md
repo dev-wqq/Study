@@ -1,3 +1,4 @@
+```
 @interface DWSingletonManager: NSObject <NSCopying>
 
 + (instancetype)sharedInstance;
@@ -32,5 +33,5 @@ static dispatch_once_t _onceToken;
     _sharedInstance = nil;
 }
 @end
-
+```
 

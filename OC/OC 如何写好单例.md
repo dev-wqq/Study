@@ -1,3 +1,5 @@
+通过重写allocWithZone：方法创建单例：
+```
 @interface DWSingletonManager: NSObject <NSCopying>
 
 + (instancetype)sharedInstance;
@@ -32,5 +34,114 @@ static dispatch_once_t _onceToken;
     _sharedInstance = nil;
 }
 @end
+```
+其中遇到两个问题记录一下：
+1、NSString的内存管理？
+2、[[NSObject alloc] init]和[NSObject new]有什么区别？
 
+1、NSString的内存管理？
+```
+/**
+__NSCFString           类对象             存储在堆上
+__NSCFConstantString   编译常量           存储在字符串常量区
+NSTaggedPointerString  64位系统针对NSString,NSNumber的优化，8位能存储下的内容使用这个优化技术
+*/
+// 测试log
+#define DWTestLog(var) NSLog(@"%@ class name:%@, p-->%p, retainCount:%ld",var,NSStringFromClass([var class]),var,var.retainCount);
+// 测试代码
+NSString *a = @"test";
+NSString *b = [[NSString alloc] initWithString:@"test"]; // Using 'initWithString:' with a literal is redundant
+NSString *c = [NSString stringWithString:@"test"];       // Using 'stringWithString:' with a literal is redundant
+NSString *d = [[NSString alloc] initWithFormat:@"test"]; 
+NSString *e = [NSString stringWithFormat:@"test"];
+NSString *f = [NSString stringWithFormat:@"12345678"];
+NSString *g = [NSString stringWithFormat:@"123456789"];
+NSString *h = [NSString stringWithFormat:@"1234567890"];
+
+// 输出结果如下：
+test       class name:__NSCFConstantString,  p-->0x102aeeeb8,        retainCount:-1
+test       class name:__NSCFConstantString,  p-->0x102aeeeb8,        retainCount:-1
+test       class name:__NSCFConstantString,  p-->0x102aeeeb8,        retainCount:-1
+test       class name:NSTaggedPointerString, p-->0xa000000747365744, retainCount:-1
+test       class name:NSTaggedPointerString, p-->0xa000000747365744, retainCount:-1
+12345678   class name:NSTaggedPointerString, p-->0xa007a87dcaecc2a8, retainCount:-1
+123456789  class name:NSTaggedPointerString, p-->0xa1ea1f72bb30ab19, retainCount:-1
+1234567890 class name:__NSCFString,          p-->0x60000023fbe0,     retainCount:1
+```
+2、[[NSObject alloc] init]和[NSObject new]有什么区别？
+```
+/**
+从源码上看：
+[[NSObject alloc] init] --> [callAlloc(cls, false/*checkNil*/, true/*allocWithZone*/) init]
+[NSObject new]          --> [callAlloc(self, false/*checkNil*/) init]
+  
+可以说在Objc 2.0以就没有什么区别，alloc 和可以调用其他initXXX：初始化方法。
+*/
+NSObject.mm中的源码：
++ (id)new {
+    return [callAlloc(self, false/*checkNil*/) init];
+}
+
++ (id)alloc {
+    return _objc_rootAlloc(self);
+}
+
+_objc_rootAlloc(Class cls)
+{
+    return callAlloc(cls, false/*checkNil*/, true/*allocWithZone*/);
+}
+
+static ALWAYS_INLINE id
+callAlloc(Class cls, bool checkNil, bool allocWithZone=false)
+{
+    if (slowpath(checkNil && !cls)) return nil;
+
+#if __OBJC2__
+    if (fastpath(!cls->ISA()->hasCustomAWZ())) {
+        // No alloc/allocWithZone implementation. Go straight to the allocator.
+        // fixme store hasCustomAWZ in the non-meta class and 
+        // add it to canAllocFast's summary
+        if (fastpath(cls->canAllocFast())) {
+            // No ctors, raw isa, etc. Go straight to the metal.
+            bool dtor = cls->hasCxxDtor();
+            id obj = (id)calloc(1, cls->bits.fastInstanceSize());
+            if (slowpath(!obj)) return callBadAllocHandler(cls);
+            obj->initInstanceIsa(cls, dtor);
+            return obj;
+        }
+        else {
+            // Has ctor or raw isa or something. Use the slower path.
+            id obj = class_createInstance(cls, 0);
+            if (slowpath(!obj)) return callBadAllocHandler(cls);
+            return obj;
+        }
+    }
+#endif
+
+    // No shortcuts available.
+    if (allocWithZone) return [cls allocWithZone:nil];
+    return [cls alloc];
+}
+
+Object.mm 中的源码：
++ (id)new
+{
+	id newObject = (*_alloc)((Class)self, 0);
+	Class metaClass = self->ISA();
+	if (class_getVersion(metaClass) > 1)
+	    return [newObject init];
+	else
+	    return newObject;
+}
+
++ (id)alloc
+{
+	return (*_zoneAlloc)((Class)self, 0, malloc_default_zone()); 
+}
+
++ (id)allocFromZone:(void *) z
+{
+	return (*_zoneAlloc)((Class)self, 0, z); 
+}
+```
 

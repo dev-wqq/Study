@@ -6,9 +6,10 @@ iOS的内存管理：使用引用计数，包括手工管理引用计数（MRC�
 
 引用计数的使用场景：在面向对象的程序设计架构中，用于对象之间传递和共享数据。
 
-ARC切换到MRC，在工程设置在文件后加上“-fno-objc-arc”。
+----
 
-ARC背后的原理：依赖编译器的静态分析能力，通过在编译时找出合理的插入引用计数管理代码，从而彻底释放程序员。
+ARC背后的原理：依赖编译器的静态分析能力，通过在编译时找出合理的插入引用计数管理代码，从而彻底释放程序员。<br>
+ARC切换到MRC，在工程设置在文件后加上“-fno-objc-arc”。
 
 ARC下的内存管理问题：<br>
 1、循环引用<br>
@@ -40,7 +41,6 @@ ARC下的内存管理问题：<br>
     * \_\_bridge\_retained：类型转换后，将相关对象的引用计数加1，原来的 Core Foundation 对象不在用时，需要调用 CFRelease 方法。
     * \_\_bridge\_transfer：类型转换后，将改对象的引用计数交个ARC管理，Core Foundation 对象在不用时，不在需要调用 CFRelease 方法。
 
-参考：
-
+参考：<br>
 [理解iOS的内存管理](https://blog.devtang.com/2016/07/30/ios-memory-management)<br>
 [MLeaksFinder](http://wereadteam.github.io/2016/07/20/MLeaksFinder2/)

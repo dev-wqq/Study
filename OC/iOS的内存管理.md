@@ -42,5 +42,5 @@ ARC下的内存管理问题：<br>
 
 参考：
 
-[理解iOS的内存管理](https://blog.devtang.com/2016/07/30/ios-memory-management)
+[理解iOS的内存管理](https://blog.devtang.com/2016/07/30/ios-memory-management)<br>
 [MLeaksFinder](http://wereadteam.github.io/2016/07/20/MLeaksFinder2/)

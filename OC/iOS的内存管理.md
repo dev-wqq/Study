@@ -37,9 +37,9 @@ ARC下的内存管理问题：<br>
   CFRelease(fontRef);
 ```
 （3）CoreFoundation 和 OC 之间对象的转换，合理的使用\_\_bridge、\_\_bridge\_retained、\_\_bridge\_transfer<br>
-    * \_\_bridge：只做类型转换，不修改相关对象的引用计数，原来的CoreFoundation 对象不在用时，需要调用 CFRelease 方法。
-    * \_\_bridge\_retained：类型转换后，将相关对象的引用计数加1，原来的 Core Foundation 对象不在用时，需要调用 CFRelease 方法。
-    * \_\_bridge\_transfer：类型转换后，将改对象的引用计数交个ARC管理，Core Foundation 对象在不用时，不在需要调用 CFRelease 方法。
+    * \_\_bridge：只做类型转换，不修改相关对象的引用计数，原来的CoreFoundation 对象不在用时，需要调用 CFRelease 方法。<br>
+    * \_\_bridge\_retained：类型转换后，将相关对象的引用计数加1，原来的 Core Foundation 对象不在用时，需要调用 CFRelease 方法。<br>
+    * \_\_bridge\_transfer：类型转换后，将改对象的引用计数交个ARC管理，Core Foundation 对象在不用时，不在需要调用 CFRelease 方法。<br>
 
 参考：<br>
 [理解iOS的内存管理](https://blog.devtang.com/2016/07/30/ios-memory-management)<br>

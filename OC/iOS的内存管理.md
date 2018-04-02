@@ -20,17 +20,22 @@ ARC下的内存管理问题：
 
 2、与CoreFoundation对象交互，需要手动管理，CoreFoundation对象的内存
 （1）底层的CoreFoundation 对象，在创建时大多以XxxCreateWithXxx 这样的方式创建；
+```
+  // 创建一个 CFStringRef 对象
+  CFStringRef str= CFStringCreateWithCString(kCFAllocatorDefault, “hello world", kCFStringEncodingUTF8);
+  // 创建一个 CTFontRef 对象
+  CTFontRef fontRef = CTFontCreateWithName((CFStringRef)@"ArialMT", fontSize, NULL);
+```
 （2）对于CoreFoundation 对象的修改，需要使用 CFRetain 和 CFRelease，和OC中的retain和release等价；
 ```
-// 创建一个 CTFontRef 对象
-CTFontRef fontRef = CTFontCreateWithName((CFStringRef)@"ArialMT", fontSize, NULL);
-// 引用计数加 1
-CFRetain(fontRef);
-// 引用计数减 1
-CFRelease(fontRef);
+  // 创建一个 CTFontRef 对象
+  CTFontRef fontRef = CTFontCreateWithName((CFStringRef)@"ArialMT", fontSize, NULL);
+  // 引用计数加 1
+  CFRetain(fontRef);
+  // 引用计数减 1
+  CFRelease(fontRef);
 ```
 
-  
-
 参考：
+
 [理解iOS的内存管理](https://blog.devtang.com/2016/07/30/ios-memory-management)

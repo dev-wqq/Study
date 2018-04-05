@@ -40,6 +40,18 @@ ARC下的内存管理问题：<br>
     * \_\_bridge\_retained：类型转换后，将相关对象的引用计数加1，原来的 Core Foundation 对象不在用时，需要调用 CFRelease 方法。<br>
     * \_\_bridge\_transfer：类型转换后，将改对象的引用计数交个ARC管理，Core Foundation 对象在不用时，不在需要调用 CFRelease 方法。<br>
 
+----
+内存管理的思考方式
+* 自己生成的对象，自己持有；<br>
+* 非自己生成的对象，自己也能持有；<br>
+* 不在需要自己持有对象时释；<br>
+* 非自己持有的对象无法释放。<br>
+![对象操作与Objective-C方法的对应](https://github.com/dev-wqq/Study/blob/master/image/objectMethod.png)
+
+copy 和 mutableCopy的区别：copy 生成不可变更的对象，而 mutableCopy 方法生成可变更的对象。
+
+
+
 参考：<br>
 [理解iOS的内存管理](https://blog.devtang.com/2016/07/30/ios-memory-management)<br>
 [MLeaksFinder](http://wereadteam.github.io/2016/07/20/MLeaksFinder2/)

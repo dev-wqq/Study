@@ -13,7 +13,7 @@ ARC切换到MRC，在工程设置在文件后加上“-fno-objc-arc”。
 ARC下的内存管理问题：<br>
 1、循环引用<br>
 （1）不正确的使用Block；<br>
-（2）两个或两个以上的对象之间的相互引用；<br>
+（2）对象自身强引用、两个或两个以上的对象之间的相互引用；<br>
 （3）NSTimer的不正确使用；<br>
  解决方法：弱引用（__weak 和 weak），主动断开循环引用。<br>
  检查方法：使用 Instruments 中的 Leaks ，或者使用 [MLeaksFinder](https://github.com/Tencent/MLeaksFinder) 在 debug 状态下检查 View 层的内存泄漏。
@@ -35,7 +35,7 @@ ARC下的内存管理问题：<br>
   // 引用计数减 1
   CFRelease(fontRef);
 ```
-（3）CoreFoundation 和 OC 之间对象的转换，合理的使用\_\_bridge、\_\_bridge\_retained、\_\_bridge\_transfer<br>
+（3）CoreFoundation 和 OC 之间对象的转换，合理的使用\_\_bridge、\_\_bridge\_retained、\_\_bridge\_transfer：<br>
     * \_\_bridge：只做类型转换，不修改相关对象的引用计数，原来的CoreFoundation 对象不在用时，需要调用 CFRelease 方法。<br>
     * \_\_bridge\_retained：类型转换后，将相关对象的引用计数加1，原来的 Core Foundation 对象不在用时，需要调用 CFRelease 方法。<br>
     * \_\_bridge\_transfer：类型转换后，将改对象的引用计数交个ARC管理，Core Foundation 对象在不用时，不在需要调用 CFRelease 方法。<br>

@@ -154,20 +154,22 @@ $ react-native start
 1. 在使用CocoaPods 导入三方依赖的时候由于网络不好(也可能是VPN不稳定)，导入三方依赖库时，经常出现这样的问题，参考[error: RPC failed; curl transfer closed with outstanding read data remaining
 ](https://stackoverflow.com/questions/38618885/error-rpc-failed-curl-transfer-closed-with-outstanding-read-data-remaining/)<br> 
 ```
-Cloning into 'boost-for-react-native'...
-remote: Counting objects: 20248, done.
-remote: Compressing objects: 100% (10204/10204), done.
-error: RPC failed; curl 18 transfer closed with outstanding read data remaining 
-fatal: The remote end hung up unexpectedly
-fatal: early EOF
-fatal: index-pack failed
+// Error Tip:
+$ Cloning into 'boost-for-react-native'...
+$ remote: Counting objects: 20248, done.
+$ remote: Compressing objects: 100% (10204/10204), done.
+$ error: RPC failed; curl 18 transfer closed with outstanding read data remaining 
+$ fatal: The remote end hung up unexpectedly
+$ fatal: early EOF
+$ fatal: index-pack failed
 
 // 解决方法：先做一个浅克隆，然后用它去更新 pod 历史仓库
 $ git clone http://github.com/boost-for-react-native --depth 1
 $ cd boost-for-react-native
 $ git fetch --unshallow
 
-PS：depth用于指定克隆深度，为1即表示只克隆最近一次commit.
+PS：--depth用于指定克隆深度，为1即表示只克隆最近一次commit.
+as git clone --depth=1 http://github.com/boost-for-react-native 
 [error: RPC failed; curl transfer closed with outstanding read data remaining
 ](https://stackoverflow.com/questions/38618885/error-rpc-failed-curl-transfer-closed-with-outstanding-read-data-remaining/) 
 ```
